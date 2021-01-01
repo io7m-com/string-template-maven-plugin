@@ -10,6 +10,16 @@ build. The values for templates can come from static declarations or from a Java
 For detailed instructions on how to use this plugin, please refer to the
 [plugin site](http://kevinbirch.github.com/string-template-maven-plugin/).
 
+This fork uses a different `groupId`:
+
+```
+<plugin>
+  <groupId>com.io7m.stmp</groupId>
+  <artifactId>string-template-maven-plugin</artifactId>
+  <version>1.2.0</version>
+</plugin>
+```
+
 | JVM             | Platform | Status |
 |-----------------|----------|--------|
 | OpenJDK LTS     | Linux    | [![Build (OpenJDK LTS, Linux)](https://img.shields.io/github/workflow/status/io7m/string-template-maven-plugin/main-openjdk_lts-linux)](https://github.com/io7m/string-template-maven-plugin/actions?query=workflow%3Amain-openjdk_lts-linux) |
