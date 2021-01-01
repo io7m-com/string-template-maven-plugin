@@ -1,8 +1,8 @@
 StringTemplate Maven Plugin
 ===
 
-[![Maven Central](https://img.shields.io/maven-central/v/string-template-maven-plugin/string-template-maven-plugin.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22string-template-maven-plugin%22)
-[![Maven Central (snapshot)](https://img.shields.io/nexus/s/https/oss.sonatype.org/string-template-maven-plugin/string-template-maven-plugin.svg?style=flat-square)](https://oss.sonatype.org/content/repositories/snapshots/com/io7m/string-template-maven-plugin/)
+[![Maven Central](https://img.shields.io/maven-central/v/com.io7m.stmp/string-template-maven-plugin.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22string-template-maven-plugin%22)
+[![Maven Central (snapshot)](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.io7m.stmp/string-template-maven-plugin.svg?style=flat-square)](https://oss.sonatype.org/content/repositories/snapshots/com/io7m/stmp/string-template-maven-plugin/)
 
 This plugin allows you to execute [StringTemplate](http://www.stringtemplate.org/) template files during your
 build. The values for templates can come from static declarations or from a Java class specified to be executed.
