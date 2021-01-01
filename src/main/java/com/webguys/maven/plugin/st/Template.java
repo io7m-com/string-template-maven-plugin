@@ -41,6 +41,7 @@ import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironment;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 public final class Template
@@ -127,10 +128,20 @@ public final class Template
     throws MojoExecutionException
   {
     try {
+      final var buildEncoding =
+        project.getProperties().getProperty("project.build.sourceEncoding");
+
+      if (buildEncoding == null) {
+        throw new MojoExecutionException(
+          "The property 'project.build.sourceEncoding' is required to be set");
+      }
+
       final var outputFile = this.prepareOutputFile(project.getBasedir());
       this.prepareCompilerSourceRoot(outputFile, project, log);
-      final var fileWriter = new FileWriter(outputFile);
-      final var listener = new ErrorBuffer();
+      final var fileWriter =
+        new FileWriter(outputFile, Charset.forName(buildEncoding));
+      final var listener =
+        new ErrorBuffer();
       st.write(new AutoIndentWriter(fileWriter), listener);
       fileWriter.flush();
       fileWriter.close();
