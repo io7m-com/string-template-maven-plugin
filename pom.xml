@@ -12,6 +12,17 @@
     <version>6.2.0</version>
   </parent>
 
+  <groupId>com.io7m.stmp</groupId>
+  <artifactId>string-template-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <version>1.2.0-SNAPSHOT</version>
+
+  <name>string-template-maven-plugin</name>
+  <description>This plugin allows you to execute StringTemplate template files during your build. The values for
+    templates can come from static declarations or from a Java class specified to be executed.
+  </description>
+  <url>https://github.com/io7m/string-template-maven-plugin</url>
+
   <prerequisites>
     <maven>3.0</maven>
   </prerequisites>
@@ -22,22 +33,12 @@
     <mavenPluginAPI>3.6.3</mavenPluginAPI>
   </properties>
 
-  <groupId>com.io7m</groupId>
-  <artifactId>string-template-maven-plugin</artifactId>
-  <packaging>maven-plugin</packaging>
-  <version>1.2.0-SNAPSHOT</version>
-
   <organization>
     <name>The WebGuys</name>
   </organization>
 
-  <name>StringTemplate Maven Plugin</name>
-  <description>This plugin allows you to execute StringTemplate template files during your build. The values for
-    templates can come from static declarations or from a Java class specified to be executed.
-  </description>
   <inceptionYear>2011</inceptionYear>
 
-  <url>https://github.com/io7m/string-template-maven-plugin</url>
   <scm>
     <connection>scm:git:https://github.com/io7m/string-template-maven-plugin.git</connection>
     <developerConnection>scm:git:https://github.com/io7m/string-template-maven-plugin.git</developerConnection>
