@@ -18,7 +18,7 @@
 
   <properties>
     <enforcer.skip>true</enforcer.skip>
-    <io7m.api.previousVersion>1.1.0</io7m.api.previousVersion>
+    <io7m.api.previousVersion>1.2.0-SNAPSHOT</io7m.api.previousVersion>
     <mavenPluginAPI>3.6.3</mavenPluginAPI>
   </properties>
 
@@ -37,16 +37,16 @@
   </description>
   <inceptionYear>2011</inceptionYear>
 
-  <url>https://github.com/kevinbirch/string-template-maven-plugin</url>
+  <url>https://github.com/io7m/string-template-maven-plugin</url>
   <scm>
-    <connection>scm:git:https://github.com/kevinbirch/string-template-maven-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/kevinbirch/string-template-maven-plugin.git</developerConnection>
-    <url>https://github.com/kevinbirch/string-template-maven-plugin</url>
+    <connection>scm:git:https://github.com/io7m/string-template-maven-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/io7m/string-template-maven-plugin.git</developerConnection>
+    <url>https://github.com/io7m/string-template-maven-plugin</url>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
-    <url>https://github.com/kevinbirch/string-template-maven-plugin/issues</url>
+    <url>https://github.com/io7m/string-template-maven-plugin/issues</url>
     <system>github</system>
   </issueManagement>
 
