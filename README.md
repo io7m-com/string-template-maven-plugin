@@ -1,13 +1,15 @@
-# StringTemplate Maven Plugin
+StringTemplate Maven Plugin
+===
 
 This plugin allows you to execute [StringTemplate](http://www.stringtemplate.org/) template files during your
-build.  The values for templates can come from static declarations or from a Java class specified to be executed.
+build. The values for templates can come from static declarations or from a Java class specified to be executed.
 
 For detailed instructions on how to use this plugin, please refer to the
 [plugin site](http://kevinbirch.github.com/string-template-maven-plugin/).
 
 ## License
 
+```
 Copyright (c) 2011-2013 Kevin Birch <kmb@pobox.com>. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,3 +29,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
