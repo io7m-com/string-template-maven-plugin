@@ -1,4 +1,8 @@
 /*
+ * Copyright © 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
+ */
+
+/*
  * The MIT License
  *
  * Copyright (c) 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
@@ -22,33 +26,4 @@
  * SOFTWARE.
  */
 
-package com.example.util;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-public class LionForceController
-{
-    private String powerLevel;
-
-    public Map<String, Object> getMembers()
-    {
-        HashMap<String, Object> result = new HashMap<String, Object>();
-        result.put("members", Arrays.asList("black", "red", "green", "blue", "yellow"));
-        if(null != this.powerLevel)
-        {
-            result.put("powerLevel", this.powerLevel);
-        }
-
-        return result;
-    }
-
-    public void setProperties(Map<String, String> properties)
-    {
-        if(properties.containsKey("powerLevel"))
-        {
-            this.powerLevel = properties.get("powerLevel");
-        }
-    }
-}
+package com.webguys.maven.plugin.st;

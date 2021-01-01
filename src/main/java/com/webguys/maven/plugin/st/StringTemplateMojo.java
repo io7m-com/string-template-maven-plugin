@@ -1,4 +1,8 @@
 /*
+ * Copyright © 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
+ */
+
+/*
  * The MIT License
  *
  * Copyright (c) 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
@@ -32,6 +36,9 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -46,85 +53,93 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 
 /**
  * Executes string template using a given controller.
- *
- * @goal render
  */
-public class StringTemplateMojo extends AbstractMojo
+
+@Mojo(name = "render")
+public final class StringTemplateMojo extends AbstractMojo
 {
-    /**
-     * The Maven Project Object
-     *
-     * @parameter property="project"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+  public StringTemplateMojo()
+  {
 
-    /**
-     * The Maven Session Object
-     *
-     * @parameter property="session"
-     * @required
-     * @readonly
-     */
-    private MavenSession session;
+  }
 
-    /**
-     * The Maven PluginManager Object
-     *
-     * @component
-     * @required
-     */
-    private BuildPluginManager pluginManager;
+  /**
+   * The Maven Project Object
+   */
 
-    /**
-     * The Maven ProjectDependenciesResolver Object
-     *
-     * @component
-     * @required
-     */
-    private ProjectDependenciesResolver dependenciesResolver;
+  @Parameter(property = "project", required = true, readonly = true)
+  private MavenProject project;
 
-    /**
-     * The collection of templates to render.
-     * @parameter
-     * @required
-     */
-    private List<Template> templates;
+  /**
+   * The Maven Session Object
+   */
 
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException
-    {
-        for(Template template : this.templates)
-        {
-            File templateDirectory = this.getTemplateDirectory(template);
+  @Parameter(property = "session", required = true, readonly = true)
+  private MavenSession session;
 
-            STGroup group = new STGroupDir(templateDirectory.getAbsolutePath());
-            ErrorBuffer errorBuffer = new ErrorBuffer();
-            group.setListener(errorBuffer);
-            ST st = group.getInstanceOf(template.getName());
+  /**
+   * The Maven PluginManager Object
+   */
 
-            if(null == st || !errorBuffer.errors.isEmpty())
-            {
-                throw new MojoExecutionException(String.format("Unable to execute template. %n%s", errorBuffer.toString()));
-            }
+  @Component
+  private BuildPluginManager pluginManager;
 
-            ExecutionEnvironment executionEnvironment = executionEnvironment(this.project, this.session, this.pluginManager);
-            template.invokeController(st, executionEnvironment, this.dependenciesResolver, this.getLog());
-            template.installProperties(st);
+  /**
+   * The Maven ProjectDependenciesResolver Object
+   */
 
-            template.render(st, this.project, this.getLog());
-        }
+  @Component
+  private ProjectDependenciesResolver dependenciesResolver;
+
+  /**
+   * The collection of templates to render.
+   */
+
+  @Parameter(required = true)
+  private List<Template> templates;
+
+  @Override
+  public void execute()
+    throws MojoExecutionException, MojoFailureException
+  {
+    for (final Template template : this.templates) {
+      final File templateDirectory = this.getTemplateDirectory(template);
+
+      final STGroup group = new STGroupDir(templateDirectory.getAbsolutePath());
+      final ErrorBuffer errorBuffer = new ErrorBuffer();
+      group.setListener(errorBuffer);
+      final ST st = group.getInstanceOf(template.getName());
+
+      if (null == st || !errorBuffer.errors.isEmpty()) {
+        throw new MojoExecutionException(String.format(
+          "Unable to execute template. %n%s",
+          errorBuffer.toString()));
+      }
+
+      final ExecutionEnvironment executionEnvironment = executionEnvironment(
+        this.project,
+        this.session,
+        this.pluginManager);
+      template.invokeController(
+        st,
+        executionEnvironment,
+        this.dependenciesResolver,
+        this.getLog());
+      template.installProperties(st);
+
+      template.render(st, this.project, this.getLog());
+    }
+  }
+
+  private File getTemplateDirectory(final Template template)
+  {
+    File templateDirectory = template.getDirectory();
+    if (!templateDirectory.isAbsolute()) {
+      templateDirectory = new File(
+        this.project.getBasedir(),
+        templateDirectory.getPath());
     }
 
-    private File getTemplateDirectory(Template template)
-    {
-        File templateDirectory = template.getDirectory();
-        if(!templateDirectory.isAbsolute())
-        {
-            templateDirectory = new File(this.project.getBasedir(), templateDirectory.getPath());
-        }
-
-        return templateDirectory;
-    }
+    return templateDirectory;
+  }
 }

@@ -1,25 +1,4 @@
+*.iml
+.idea
+pom.xml.versionsBackup
 target
-settings.xml
-
-# intellij files
-*.iws
-.idea/workspace.xml
-.idea/ant.xml
-.idea/uiDesigner.xml
-.idea/libraries
-.idea/dictionaries
-.idea/copyright
-.idea/inspectionProfiles
-
-# eclipse files
-.project
-.classpath
-.settings
-.externalToolBuilders/
-maven-eclipse.xml
-
-# OS X files
-.DS_Store
-
-# backups
-*~

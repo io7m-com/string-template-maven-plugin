@@ -1,4 +1,8 @@
 /*
+ * Copyright © 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
+ */
+
+/*
  * The MIT License
  *
  * Copyright (c) 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
@@ -27,6 +31,7 @@ package com.webguys.maven.plugin.st;
 import org.apache.maven.ProjectDependenciesResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
@@ -37,133 +42,146 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
 
-public class Template
+public final class Template
 {
-    /**
-     * The path to the template file's parent directory.
-     *
-     * @parameter
-     * @required
-     */
-    private File directory;
+  public Template()
+  {
 
-    /**
-     * The name of the template file to render.
-     *
-     * @parameter
-     * @required
-     */
-    private String name;
+  }
 
-    /**
-     * The path to the output file.
-     *
-     * @parameter
-     * @required
-     */
-    private File target;
+  /**
+   * The path to the template file's parent directory.
+   */
 
-    /**
-     * The class to invoke to provide data for the template.
-     *
-     * @parameter
-     */
-    private Controller controller;
+  @Parameter(required = true)
+  private File directory;
 
-    /**
-     * The static properties to be provided to the template.
-     *
-     * @parameter
-     */
-    private Map<String, String> properties;
+  /**
+   * The name of the template file to render.
+   */
 
-    public File getDirectory()
-    {
-        return directory;
+  @Parameter(required = true)
+  private String name;
+
+  /**
+   * The path to the output file.
+   */
+
+  @Parameter(required = true)
+  private File target;
+
+  /**
+   * The class to invoke to provide data for the template.
+   */
+
+  @Parameter
+  private Controller controller;
+
+  /**
+   * The static properties to be provided to the template.
+   */
+
+  @Parameter
+  private Map<String, String> properties;
+
+  public File getDirectory()
+  {
+    return this.directory;
+  }
+
+  public String getName()
+  {
+    return this.name;
+  }
+
+  public void invokeController(
+    final ST st,
+    final ExecutionEnvironment executionEnvironment,
+    final ProjectDependenciesResolver dependenciesResolver,
+    final Log log)
+    throws MojoExecutionException
+  {
+    if (null != this.controller) {
+      this.controller.invoke(
+        st,
+        executionEnvironment,
+        dependenciesResolver,
+        log);
+    }
+  }
+
+  public void installProperties(final ST st)
+  {
+    if (null != this.properties) {
+      for (final var entry : this.properties.entrySet()) {
+        st.add(entry.getKey(), entry.getValue());
+      }
+    }
+  }
+
+  public void render(
+    final ST st,
+    final MavenProject project,
+    final Log log)
+    throws MojoExecutionException
+  {
+    try {
+      final var outputFile = this.prepareOutputFile(project.getBasedir());
+      this.prepareCompilerSourceRoot(outputFile, project, log);
+      final var fileWriter = new FileWriter(outputFile);
+      final var listener = new ErrorBuffer();
+      st.write(new AutoIndentWriter(fileWriter), listener);
+      fileWriter.flush();
+      fileWriter.close();
+
+      if (!listener.errors.isEmpty()) {
+        throw new MojoExecutionException(listener.toString());
+      }
+    } catch (final IOException e) {
+      throw new MojoExecutionException(String.format(
+        "Unable to write output file: %s. (%s)",
+        this.target.getAbsolutePath(),
+        e.getMessage()), e);
+    }
+  }
+
+  private File prepareOutputFile(final File baseDirectory)
+    throws MojoExecutionException, IOException
+  {
+    var outputFile = this.target;
+    if (!outputFile.isAbsolute()) {
+      outputFile = new File(baseDirectory, outputFile.getPath());
     }
 
-    public String getName()
-    {
-        return name;
+    if (!outputFile.exists()) {
+      if (!outputFile.getParentFile().exists() && !outputFile.getParentFile().mkdirs()) {
+        throw new MojoExecutionException(String.format(
+          "Unable to fully create the output directory: %s",
+          this.target.getParentFile()));
+      }
+      if (!outputFile.createNewFile()) {
+        throw new MojoExecutionException(String.format(
+          "Unable to create the output file: %s",
+          this.target));
+      }
     }
 
-    public void invokeController(ST st, ExecutionEnvironment executionEnvironment, ProjectDependenciesResolver dependenciesResolver, Log log) throws MojoExecutionException
-    {
-        if(null != this.controller)
-        {
-            this.controller.invoke(st, executionEnvironment, dependenciesResolver, log);
-        }
+    return outputFile;
+  }
+
+  private void prepareCompilerSourceRoot(
+    final File file,
+    final MavenProject project,
+    final Log log)
+  {
+    final var path = file.getPath();
+    if (file.getName().endsWith("java") && path.contains("generated-sources")) {
+      var index = path.indexOf("generated-sources") + 18;
+      index = path.indexOf(File.separator, index);
+      final var sourceRoot = path.substring(0, index);
+      log.info("Adding compile source root: " + sourceRoot);
+      project.addCompileSourceRoot(sourceRoot);
     }
-
-    public void installProperties(ST st)
-    {
-        if(null != this.properties)
-        {
-            for(Entry<String, String> entry : this.properties.entrySet())
-            {
-                st.add(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    public void render(ST st, MavenProject project, Log log) throws MojoExecutionException
-    {
-        try
-        {
-            File outputFile = this.prepareOutputFile(project.getBasedir());
-            this.prepareCompilerSourceRoot(outputFile, project, log);
-            FileWriter fileWriter = new FileWriter(outputFile);
-            ErrorBuffer listener = new ErrorBuffer();
-            st.write(new AutoIndentWriter(fileWriter), listener);
-            fileWriter.flush();
-            fileWriter.close();
-
-            if(!listener.errors.isEmpty())
-            {
-                throw new MojoExecutionException(listener.toString());
-            }
-        }
-        catch(IOException e)
-        {
-            throw new MojoExecutionException(String.format("Unable to write output file: %s. (%s)", this.target.getAbsolutePath(), e.getMessage()), e);
-        }
-    }
-
-    private File prepareOutputFile(File baseDirectory) throws MojoExecutionException, IOException
-    {
-        File outputFile = this.target;
-        if(!outputFile.isAbsolute())
-        {
-            outputFile = new File(baseDirectory, outputFile.getPath());
-        }
-
-        if(!outputFile.exists())
-        {
-            if(!outputFile.getParentFile().exists() && !outputFile.getParentFile().mkdirs())
-            {
-                throw new MojoExecutionException(String.format("Unable to fully create the output directory: %s", this.target.getParentFile()));
-            }
-            if(!outputFile.createNewFile())
-            {
-                throw new MojoExecutionException(String.format("Unable to create the output file: %s", this.target));
-            }
-        }
-
-        return outputFile;
-    }
-
-    private void prepareCompilerSourceRoot(File file, MavenProject project, Log log)
-    {
-        String path = file.getPath();
-        if(file.getName().endsWith("java") && path.contains("generated-sources"))
-        {
-            int index = path.indexOf("generated-sources") + 18;
-            index = path.indexOf(File.separator, index);
-            String sourceRoot = path.substring(0, index);
-            log.info("Adding compile source root: " + sourceRoot);
-            project.addCompileSourceRoot(sourceRoot);
-        }
-    }
+  }
 }
