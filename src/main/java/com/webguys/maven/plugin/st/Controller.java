@@ -62,8 +62,16 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
+/**
+ * The main controller.
+ */
+
 public final class Controller
 {
+  /**
+   * The main controller.
+   */
+
   public Controller()
   {
 
@@ -107,6 +115,17 @@ public final class Controller
   private String compilerVersion = "3.0";
 
   private Object controllerInstance;
+
+  /**
+   * Execute the controller.
+   *
+   * @param st                   The string template
+   * @param executionEnvironment The execution environment
+   * @param dependenciesResolver The dependency resolver
+   * @param log                  A logger
+   *
+   * @throws MojoExecutionException On errors
+   */
 
   public void invoke(
     final ST st,

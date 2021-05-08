@@ -58,6 +58,10 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 @Mojo(name = "render")
 public final class StringTemplateMojo extends AbstractMojo
 {
+  /**
+   * Executes string template using a given controller.
+   */
+
   public StringTemplateMojo()
   {
 

@@ -44,8 +44,16 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+/**
+ * A string template.
+ */
+
 public final class Template
 {
+  /**
+   * A string template.
+   */
+
   public Template()
   {
 
@@ -86,15 +94,34 @@ public final class Template
   @Parameter
   private Map<String, String> properties;
 
+  /**
+   * @return The base directory
+   */
+
   public File getDirectory()
   {
     return this.directory;
   }
 
+  /**
+   * @return The template name
+   */
+
   public String getName()
   {
     return this.name;
   }
+
+  /**
+   * Execute the controller.
+   *
+   * @param st                   The string template
+   * @param executionEnvironment The execution environment
+   * @param dependenciesResolver The dependency resolver
+   * @param log                  A logger
+   *
+   * @throws MojoExecutionException On errors
+   */
 
   public void invokeController(
     final ST st,
@@ -112,6 +139,12 @@ public final class Template
     }
   }
 
+  /**
+   * Install template properties.
+   *
+   * @param st The template
+   */
+
   public void installProperties(final ST st)
   {
     if (null != this.properties) {
@@ -120,6 +153,16 @@ public final class Template
       }
     }
   }
+
+  /**
+   * Render the template.
+   *
+   * @param st      The template
+   * @param project The project
+   * @param log     A logger
+   *
+   * @throws MojoExecutionException On errors
+   */
 
   public void render(
     final ST st,
