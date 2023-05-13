@@ -30,7 +30,7 @@
   <properties>
     <enforcer.skip>true</enforcer.skip>
     <io7m.api.previousVersion>1.2.0-SNAPSHOT</io7m.api.previousVersion>
-    <mavenPluginAPI>3.9.1</mavenPluginAPI>
+    <mavenPluginAPI>3.9.2</mavenPluginAPI>
   </properties>
 
   <organization>
