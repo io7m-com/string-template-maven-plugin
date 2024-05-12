@@ -1,0 +1,7 @@
+## string-template-maven-plugin
+
+The `string-template-maven-plugin` package provides a plugin to
+execute StringTemplate templates during a build.
+
+## Usage
+

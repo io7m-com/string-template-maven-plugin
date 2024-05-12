@@ -18,19 +18,20 @@
   <version>1.2.1-SNAPSHOT</version>
 
   <name>string-template-maven-plugin</name>
-  <description>This plugin allows you to execute StringTemplate template files during your build. The values for
-    templates can come from static declarations or from a Java class specified to be executed.
-  </description>
-  <url>https://github.com/io7m/string-template-maven-plugin</url>
+  <description>String Template Maven plugin.</description>
+  <url>https://www.io7m.com/software/string-template-maven-plugin</url>
 
   <prerequisites>
     <maven>3.8.3</maven>
   </prerequisites>
 
   <properties>
-    <enforcer.skip>true</enforcer.skip>
+    <!-- Configuration. -->
     <io7m.api.previousVersion>1.2.0-SNAPSHOT</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
+    <enforcer.skip>true</enforcer.skip>
+
+    <!-- Third-party dependencies. -->
     <mavenPluginAPI>3.9.6</mavenPluginAPI>
   </properties>
 
@@ -41,14 +42,13 @@
   <inceptionYear>2011</inceptionYear>
 
   <scm>
-    <connection>scm:git:https://github.com/io7m/string-template-maven-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/io7m/string-template-maven-plugin.git</developerConnection>
-    <url>https://github.com/io7m/string-template-maven-plugin</url>
-    <tag>HEAD</tag>
+    <connection>scm:git:https://www.github.com/io7m-com/string-template-maven-plugin.git</connection>
+    <developerConnection>scm:git:https://www.github.com/io7m-com/string-template-maven-plugin.git</developerConnection>
+    <url>https://www.github.com/io7m-com/string-template-maven-plugin</url>
   </scm>
 
   <issueManagement>
-    <url>https://github.com/io7m/string-template-maven-plugin/issues</url>
+    <url>https://www.github.com/io7m-com/string-template-maven-plugin/issues</url>
     <system>github</system>
   </issueManagement>
 
@@ -85,26 +85,7 @@
       <artifactId>ST4</artifactId>
       <version>4.3.4</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>${mavenPluginAPI}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
-      <version>${mavenPluginAPI}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-      <version>${mavenPluginAPI}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-      <version>${mavenPluginAPI}</version>
-    </dependency>
+
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-util</artifactId>
@@ -115,10 +96,40 @@
       <artifactId>mojo-executor</artifactId>
       <version>2.4.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>3.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${mavenPluginAPI}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${mavenPluginAPI}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+      <version>${mavenPluginAPI}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>${mavenPluginAPI}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.10.2</version>
+      <version>3.13.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -129,7 +140,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.13.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
