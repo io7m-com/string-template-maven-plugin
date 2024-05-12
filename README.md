@@ -21,4 +21,53 @@ execute StringTemplate templates during a build.
 
 ## Usage
 
+An example of generating a `PAreasBDTest.java` file from a template named
+`PAreasTest` in `src/main/string-template/PAreasTest.st`:
+
+```
+<build>
+  <plugins>
+...
+
+<plugin>
+  <groupId>com.io7m.stmp</groupId>
+  <artifactId>string-template-maven-plugin</artifactId>
+  <executions>
+    <execution>
+      <id>generate-area-P-BD</id>
+      <phase>generate-sources</phase>
+      <goals>
+        <goal>renderTemplate</goal>
+      </goals>
+      <configuration>
+        <template>
+          <name>PAreasTest</name>
+          <inputFile>
+            ${project.basedir}/src/main/string-template/PAreasTest.st
+          </inputFile>
+          <outputFile>
+            ${project.build.directory}/generated-sources/string-template/com/io7m/jregions/tests/core/parameterized/PAreasBDTest.java
+          </outputFile>
+          <properties>
+            <scalarType>java.math.BigDecimal</scalarType>
+            <scalarGeneratorType>Generator&lt;java.math.BigDecimal&gt;</scalarGeneratorType>
+            <areaType>com.io7m.jregions.core.parameterized.areas.PAreaBD</areaType>
+            <areaSizeType>com.io7m.jregions.core.parameterized.sizes.PAreaSizeBD</areaSizeType>
+            <areaOpsType>com.io7m.jregions.core.parameterized.areas.PAreasBD</areaOpsType>
+            <className>PAreasBDTest</className>
+            <splitXType>com.io7m.jregions.core.parameterized.areas.PAreaXSplitBD</splitXType>
+            <splitYType>com.io7m.jregions.core.parameterized.areas.PAreaYSplitBD</splitYType>
+            <splitXYType>com.io7m.jregions.core.parameterized.areas.PAreaXYSplitBD</splitXYType>
+            <opClass>PAreasBDTestOps</opClass>
+          </properties>
+        </template>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+
+...
+  </plugins>
+</build>
+```
 
