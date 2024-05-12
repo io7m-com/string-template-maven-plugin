@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<c:changelog project="com.io7m.string-template-maven-plugin" xmlns:c="urn:com.io7m.changelog:4.0">
+  <c:releases>
+    <c:release date="2024-05-12T16:42:58+00:00" is-open="false" ticket-system="com.github.io7m.string-template-maven-plugin" version="2.0.0">
+      <c:changes/>
+    </c:release>
+  </c:releases>
+  <c:ticket-systems>
+    <c:ticket-system default="true" id="com.github.io7m.string-template-maven-plugin" url="https://www.github.com/io7m-com/string-template-maven-plugin/issues/"/>
+  </c:ticket-systems>
+</c:changelog>

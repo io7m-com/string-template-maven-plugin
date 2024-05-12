@@ -1,145 +1,118 @@
 /*
- * Copyright © 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
+ * Copyright © 2024 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/*
- * The MIT License
- *
- * Copyright (c) 2011 Kevin Birch <kmb@pobox.com>. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is furnished to do
- * so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Created: 11/20/11 10:47 PM
- */
 
 package com.webguys.maven.plugin.st;
 
-import org.apache.maven.ProjectDependenciesResolver;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironment;
 
-import java.io.File;
-import java.util.List;
-
-import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
+import java.io.IOException;
+import java.nio.file.Files;
 
 /**
- * Executes string template using a given controller.
+ * The main mojo.
  */
 
-@Mojo(name = "render")
+@Mojo(
+  name = "renderTemplate",
+  defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public final class StringTemplateMojo extends AbstractMojo
 {
+  /**
+   * The template to render.
+   */
+
+  @Parameter(required = true, name = "template")
+  private Template template;
+
+  /**
+   * The main mojo.
+   */
+
   public StringTemplateMojo()
   {
 
   }
 
-  /**
-   * The Maven Project Object
-   */
-
-  @Parameter(property = "project", required = true, readonly = true)
-  private MavenProject project;
-
-  /**
-   * The Maven Session Object
-   */
-
-  @Parameter(property = "session", required = true, readonly = true)
-  private MavenSession session;
-
-  /**
-   * The Maven PluginManager Object
-   */
-
-  @Component
-  private BuildPluginManager pluginManager;
-
-  /**
-   * The Maven ProjectDependenciesResolver Object
-   */
-
-  @Component
-  private ProjectDependenciesResolver dependenciesResolver;
-
-  /**
-   * The collection of templates to render.
-   */
-
-  @Parameter(required = true)
-  private List<Template> templates;
-
   @Override
   public void execute()
-    throws MojoExecutionException, MojoFailureException
+    throws MojoExecutionException
   {
-    for (final Template template : this.templates) {
-      final File templateDirectory = this.getTemplateDirectory(template);
+    final var logger =
+      this.getLog();
+    final STGroup group =
+      new STGroupDir(this.template.inputFile.getParent());
 
-      final STGroup group = new STGroupDir(templateDirectory.getAbsolutePath());
-      final ErrorBuffer errorBuffer = new ErrorBuffer();
-      group.setListener(errorBuffer);
-      final ST st = group.getInstanceOf(template.getName());
+    final ErrorBuffer errorBuffer = new ErrorBuffer();
+    group.setListener(errorBuffer);
 
-      if (null == st || !errorBuffer.errors.isEmpty()) {
-        throw new MojoExecutionException(String.format(
-          "Unable to execute template. %n%s",
-          errorBuffer.toString()));
-      }
-
-      final ExecutionEnvironment executionEnvironment = executionEnvironment(
-        this.project,
-        this.session,
-        this.pluginManager);
-      template.invokeController(
-        st,
-        executionEnvironment,
-        this.dependenciesResolver,
-        this.getLog());
-      template.installProperties(st);
-
-      template.render(st, this.project, this.getLog());
-    }
-  }
-
-  private File getTemplateDirectory(final Template template)
-  {
-    File templateDirectory = template.getDirectory();
-    if (!templateDirectory.isAbsolute()) {
-      templateDirectory = new File(
-        this.project.getBasedir(),
-        templateDirectory.getPath());
+    final ST st;
+    try {
+      st = group.getInstanceOf(this.template.name);
+    } catch (final Exception e) {
+      errorBuffer.errors.forEach(message -> {
+        logger.error(this.template.inputFile + ": " + message.toString());
+      });
+      throw new MojoExecutionException(e);
     }
 
-    return templateDirectory;
+    if (null == st || !errorBuffer.errors.isEmpty()) {
+      throw new MojoExecutionException(
+        String.format("Unable to execute template. %n%s", errorBuffer)
+      );
+    }
+
+    for (final var entry : this.template.properties.entrySet()) {
+      st.add(
+        entry.getKey().trim(),
+        entry.getValue().trim()
+      );
+    }
+
+    try {
+      Files.createDirectories(
+        this.template.outputFile.getParentFile()
+          .toPath()
+      );
+    } catch (final IOException e) {
+      throw new MojoExecutionException(e);
+    }
+
+    final ErrorBuffer errorListener = new ErrorBuffer();
+    try (var fileWriter =
+           Files.newBufferedWriter(this.template.outputFile.toPath())) {
+
+      st.write(new AutoIndentWriter(fileWriter), errorListener);
+      fileWriter.flush();
+    } catch (final IOException e) {
+      throw new MojoExecutionException(e);
+    }
+
+    if (!errorListener.errors.isEmpty()) {
+      throw new MojoExecutionException(errorListener.toString());
+    }
   }
 }

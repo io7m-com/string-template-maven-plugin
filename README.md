@@ -1,41 +1,73 @@
-StringTemplate Maven Plugin
+string-template-maven-plugin
 ===
 
-[![Maven Central](https://img.shields.io/maven-central/v/string-template-maven-plugin/string-template-maven-plugin.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22string-template-maven-plugin%22)
-[![Maven Central (snapshot)](https://img.shields.io/nexus/s/https/oss.sonatype.org/string-template-maven-plugin/string-template-maven-plugin.svg?style=flat-square)](https://oss.sonatype.org/content/repositories/snapshots/com/io7m/string-template-maven-plugin/)
+[![Maven Central](https://img.shields.io/maven-central/v/com.io7m.stmp/string-template-maven-plugin.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22string-template-maven-plugin%22)
+[![Maven Central (snapshot)](https://img.shields.io/nexus/s/com.io7m.stmp/string-template-maven-plugin?server=https%3A%2F%2Fs01.oss.sonatype.org&style=flat-square)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/io7m/stmp/)
+[![Codecov](https://img.shields.io/codecov/c/github/io7m-com/string-template-maven-plugin.svg?style=flat-square)](https://codecov.io/gh/io7m-com/string-template-maven-plugin)
+![Java Version](https://img.shields.io/badge/21-java?label=java&color=e6c35c)
 
-This plugin allows you to execute [StringTemplate](http://www.stringtemplate.org/) template files during your
-build. The values for templates can come from static declarations or from a Java class specified to be executed.
+![string-template-maven-plugin](./src/site/resources/string-template-maven-plugin.jpg?raw=true)
 
-For detailed instructions on how to use this plugin, please refer to the
-[plugin site](http://kevinbirch.github.com/string-template-maven-plugin/).
+| JVM | Platform | Status |
+|-----|----------|--------|
+| OpenJDK (Temurin) Current | Linux | [![Build (OpenJDK (Temurin) Current, Linux)](https://img.shields.io/github/actions/workflow/status/io7m-com/string-template-maven-plugin/main.linux.temurin.current.yml)](https://www.github.com/io7m-com/string-template-maven-plugin/actions?query=workflow%3Amain.linux.temurin.current)|
+| OpenJDK (Temurin) LTS | Linux | [![Build (OpenJDK (Temurin) LTS, Linux)](https://img.shields.io/github/actions/workflow/status/io7m-com/string-template-maven-plugin/main.linux.temurin.lts.yml)](https://www.github.com/io7m-com/string-template-maven-plugin/actions?query=workflow%3Amain.linux.temurin.lts)|
+| OpenJDK (Temurin) Current | Windows | [![Build (OpenJDK (Temurin) Current, Windows)](https://img.shields.io/github/actions/workflow/status/io7m-com/string-template-maven-plugin/main.windows.temurin.current.yml)](https://www.github.com/io7m-com/string-template-maven-plugin/actions?query=workflow%3Amain.windows.temurin.current)|
+| OpenJDK (Temurin) LTS | Windows | [![Build (OpenJDK (Temurin) LTS, Windows)](https://img.shields.io/github/actions/workflow/status/io7m-com/string-template-maven-plugin/main.windows.temurin.lts.yml)](https://www.github.com/io7m-com/string-template-maven-plugin/actions?query=workflow%3Amain.windows.temurin.lts)|
+## string-template-maven-plugin
 
-| JVM             | Platform | Status |
-|-----------------|----------|--------|
-| OpenJDK LTS     | Linux    | [![Build (OpenJDK LTS, Linux)](https://img.shields.io/github/workflow/status/io7m/string-template-maven-plugin/main-openjdk_lts-linux)](https://github.com/io7m/string-template-maven-plugin/actions?query=workflow%3Amain-openjdk_lts-linux) |
-| OpenJDK Current | Linux    | [![Build (OpenJDK Current, Linux)](https://img.shields.io/github/workflow/status/io7m/string-template-maven-plugin/main-openjdk_current-linux)](https://github.com/io7m/string-template-maven-plugin/actions?query=workflow%3Amain-openjdk_current-linux)
-| OpenJDK Current | Windows  | [![Build (OpenJDK Current, Windows)](https://img.shields.io/github/workflow/status/io7m/string-template-maven-plugin/main-openjdk_current-windows)](https://github.com/io7m/string-template-maven-plugin/actions?query=workflow%3Amain-openjdk_current-windows)
+The `string-template-maven-plugin` package provides a plugin to
+execute StringTemplate templates during a build.
 
-## License
+## Usage
+
+An example of generating a `PAreasBDTest.java` file from a template named
+`PAreasTest` in `src/main/string-template/PAreasTest.st`:
 
 ```
-Copyright (c) 2011-2013 Kevin Birch <kmb@pobox.com>. All rights reserved.
+<build>
+  <plugins>
+...
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
+<plugin>
+  <groupId>com.io7m.stmp</groupId>
+  <artifactId>string-template-maven-plugin</artifactId>
+  <executions>
+    <execution>
+      <id>generate-area-P-BD</id>
+      <phase>generate-sources</phase>
+      <goals>
+        <goal>renderTemplate</goal>
+      </goals>
+      <configuration>
+        <template>
+          <name>PAreasTest</name>
+          <inputFile>
+            ${project.basedir}/src/main/string-template/PAreasTest.st
+          </inputFile>
+          <outputFile>
+            ${project.build.directory}/generated-sources/string-template/com/io7m/jregions/tests/core/parameterized/PAreasBDTest.java
+          </outputFile>
+          <properties>
+            <scalarType>java.math.BigDecimal</scalarType>
+            <scalarGeneratorType>Generator&lt;java.math.BigDecimal&gt;</scalarGeneratorType>
+            <areaType>com.io7m.jregions.core.parameterized.areas.PAreaBD</areaType>
+            <areaSizeType>com.io7m.jregions.core.parameterized.sizes.PAreaSizeBD</areaSizeType>
+            <areaOpsType>com.io7m.jregions.core.parameterized.areas.PAreasBD</areaOpsType>
+            <className>PAreasBDTest</className>
+            <splitXType>com.io7m.jregions.core.parameterized.areas.PAreaXSplitBD</splitXType>
+            <splitYType>com.io7m.jregions.core.parameterized.areas.PAreaYSplitBD</splitYType>
+            <splitXYType>com.io7m.jregions.core.parameterized.areas.PAreaXYSplitBD</splitXYType>
+            <opClass>PAreasBDTestOps</opClass>
+          </properties>
+        </template>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+...
+  </plugins>
+</build>
 ```
+

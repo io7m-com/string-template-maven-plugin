@@ -26,4 +26,8 @@
  * SOFTWARE.
  */
 
+/**
+ * The string-template Maven plugin.
+ */
+
 package com.webguys.maven.plugin.st;
